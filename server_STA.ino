@@ -1,7 +1,7 @@
 /************************ 
 Temp / Humidity Sensor as webserver
 ACE Lab November 2018
-Basic temp / humidity sensor that publishes JSON to a standalone AP / webserver
+Basic temp / humidity sensor that publishes JSON as a managed node on a network
 *************************/
 
 #include <ESP8266WiFi.h>                          // Include the Wi-Fi library
