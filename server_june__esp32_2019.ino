@@ -336,7 +336,3 @@ void handleServo(){
 void handleJSON(){
   server.send ( 200, "text/json", createJsonResponse());
 }
-
-
-
-
