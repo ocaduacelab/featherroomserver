@@ -3,7 +3,8 @@ Web Room Server
 ACE Lab October 2019
 ESp32 update. 
 ESp32 - Analog filter: https://github.com/jonnieZG/EWMA
-// note: Using wifi and the analog pins + this filter can cause conflicts at the hardware level. Try to avoid pins A0 and A1
+note: Using wifi and the analog pins + this filter can sometimes cause conflicts at the hardware level. Try to avoid pins A0 and A1
+file: server_october_esp32_2019.ino
 *************************/
 #include <Arduino.h>
 #include <WiFi.h>                   // Include the Wi-Fi library
@@ -36,7 +37,7 @@ int photocellReading;     // the analog reading from the sensor divider
 /********** SOIL MOISTURE SENSOR **************/
 int soilPin = A3;
 int rawSoil;
-float soilReading;
+int soilReading;
 
 /********** PIR SENSOR **************/
 int pirPin = 15;               // choose the input pin (for PIR sensor)
@@ -107,11 +108,11 @@ Sweeper sweeper1(10);
 
 /********** TIMER **************/
 unsigned long previousMillis = 0;         // will store last time things were read
-const long interval = 60000;              // miliseconds, 1 minute.
+const long interval = 60000;              // miliseconds, 1 minute. 60000
 
 /********** ESP Server and AP **************/
-const char *wider_ssid = "xxxxxx";
-const char *wider_password = "xxxxx";
+const char *wider_ssid = "xxxx";
+const char *wider_password = "xxxx";
 
 // IP address: 192.168.0.18
 // MAC address: 80-7D-3A-F2-4B-5C
@@ -207,8 +208,15 @@ void loop() {
         humidity = dht.readHumidity();          // Read humidity (percent)
         temp_f = dht.readTemperature(true);     // Read temperature as Fahrenheit
         temp_c = dht.readTemperature();         // read temp as celcius
+        
         soilReading = adcFilter2.filter(rawSoil);
-        Serial.printf("Raw=%d, soilReading=%.2f",rawSoil,soilReading);
+        if(soilReading >= 3000){
+          soilReading = 3000;
+        }else if (soilReading <= 1400){
+          soilReading = 1400;
+        }
+        Serial.println(rawSoil);
+        Serial.println(soilReading);
         Serial.println("");
         
         // if these aren't coming out as numbers
@@ -260,7 +268,7 @@ String createJsonResponse(){
   String tempC = String((float)temp_c);
   String humid = String((float)humidity);
   String light = String((int)photocellReading);
-  String soil = String((float)soilReading);
+  String soil = String((int)soilReading);
   String servo = servo_status;
   String ledStatus = led_status;
   String motion = motion_status;
